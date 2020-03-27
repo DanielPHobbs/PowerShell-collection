@@ -1,0 +1,93 @@
+#region script change log	
+#Created by Carl Webster and Michael B. Smith
+#webster@carlwebster.com
+#@carlwebster on Twitter
+#http://www.CarlWebster.com
+#Created on February 10, 2016
+
+#Version 1.20 13-Feb-2020
+#	Added -AllDNSServers (ALL) parameter to process all AD DNS servers that are online
+#		Added text file (BadDNSServers_yyyy-MM-dd_HHmm.txt) of the AD DNS servers that 
+#		are either offline or no longer have DNS installed
+#	Added a new Function TestComputerName2 to support the -AllDNSServers parameter
+#	Added the DNS server name to the section title for the DNS server
+#	Fix Swedish Table of Contents (Thanks to Johan Kallio)
+#		From 
+#			'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+#		To
+#			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
+#	General code cleanup
+#	The following functions were updated to support the -AllDNSServers parameter:
+#		ProcessDNSServer
+#		OutputDNSServer
+#		ProcessForwardLookupZones
+#		OutputLookupZone
+#		ProcessLookupZoneDetails
+#		ProcessTrustPoints
+#		ShowScriptOptions
+#		ProcessScriptStart
+#		ProcessScriptEnd
+#	Updated Function CheckWordPrereq to match the other scripts
+#	Updated the help text
+
+#Version 1.12 6-Dec-2019
+#	Fixed text string "Use root hint if no forwarders are available" to "Use root hints if no forwarders are available"
+#	Fixed spacing error in Text output for "Use root hints if no forwarders are available"
+#	For Name Servers, if the IP Address is Null or Empty, use "Unable to retrieve an IP Address"
+#		For Word/PDF and HTML output put the invalid Name Server and "Unable to retrieve an IP Address" in Red
+#		For Text output use "***Unable to retrieve an IP Address***"
+#	Reorder parameters
+#	Update help text
+
+#Version 1.11 25-Oct-2019
+#	Fixed the sorting of Root Hint servers thanks to MBS
+#	Fixed the sorting on Name Servers
+
+#Version 1.10 6-Apr-2018
+#	Code clean up from Visual Studio Code
+
+#Version 1.09 2-Mar-2018
+#	Added Log switch to create a transcript log
+#	I found two "If($Var = something)" which are now "If($Var -eq something)"
+#	In the function OutputLookupZoneDetails, with the "=" changed to "-eq" fix, the hostname was now always blank. Fixed.
+#	Many Switch bocks I never added "; break" to. Those are now fixed.
+#	Update functions ShowScriptOutput and ProcessScriptEnd for new Log parameter
+#	Updated help text
+#	Updated the WriteWordLine function 
+
+#Version 1.08 8-Dec-2017
+#	Updated Function WriteHTMLLine with fixes from the script template
+
+#Version 1.07 13-Nov-2017
+#	Added Scavenge Server(s) to Zone Properties General section
+#	Added the domain name of the computer used for -ComputerName to the output filename
+#	Fixed output of Name Server IP address(es) in Zone properties
+#	For Word/PDF output added the domain name of the computer used for -ComputerName to the report title
+#	General code cleanup
+#	In Text output, fixed alignment of "Scavenging period" in DNS Server Properties
+
+#Version 1.06 13-Feb-2017
+#	Fixed French wording for Table of Contents 2 (Thanks to David Rouquier)
+
+#Version 1.05 7-Nov-2016
+#	Added Chinese language support
+
+#Version 1.04 22-Oct-2016
+#	More refinement of HTML output
+
+#Version 1.03 19-Oct-2016
+#	Fixed formatting issues with HTML headings output
+
+#Version 1.02 19-Aug-2016
+#	Fixed several misspelled words
+
+#Version 1.01 16-Aug-2016
+#	Added support for the four Record Types created by implementing DNSSEC
+#		NSec
+#		NSec3
+#		NSec3Param
+#		RRSig
+
+#Version 1.00 released to the community on July 25, 2016
+
+
