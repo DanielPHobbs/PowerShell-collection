@@ -1,0 +1,34 @@
+#This script was created by Andrew McCullough
+# Please provide any feedback, issues or suggestions to: amccullough84@gmail.com
+#@andymc84 on Twitter
+
+#Version 1.1 14-Sep-2018
+# Fixed issue with Stylebook Content being output in Base64
+# Fixed issue with Stylebook description containing newline characters breaking tables
+
+
+#Version 1.01 13-Feb-2017
+#	Fixed French wording for Table of Contents 2 (Thaqnks to David Rouquier)
+
+This is v1.0 based on Carl’s Script Template and Barry Schiffer’s NetScaler Documentation Framework.
+
+This version includes:
+
+-	MAS System Configuration
+-	Basic Configuration
+-	System Administration Settings
+-	Licensing
+-	Notification Settings
+-	SNMP Configuration
+-	Authentication Settings
+-	Device Profiles
+-	Managed Instances
+-	Instance Groups
+-	Event Management
+-	Configuration Templates
+-	DataCenters/IP Blocks
+-	Stylebooks
+- 	Analytics Settings
+
+ 
+ 

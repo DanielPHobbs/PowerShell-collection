@@ -1,0 +1,653 @@
+#webster@carlwebster.com
+#@carlwebster on Twitter
+#http://www.CarlWebster.com
+# Created on October 20, 2013
+
+#Version 2.32 20-Mar-2020
+#	Added to Delivery Group details, App Protection keyboard and screen capture settings
+#		App protection is an add-on feature that provides enhanced security when using 
+#		Citrix Workspace app. Two policies provide anti-keylogging and anti-screen-capturing 
+#		capabilities in a session. The policies along with Citrix Workspace app 2001 or later 
+#		for Mac can help protect data from keyloggers and screen scrapers.
+#	Note:
+#		If you connect from an older version of Citrix Workspace app, or from Citrix Receiver, 
+#			these policies are not enabled.
+#		Only workstation operating systems support app protection.
+#	Thanks to fellow CTP Ryan Revord for testing this update
+
+#Version 2.31 28-Dec-2019
+#	Added new Computer policy settings for CVAD 1912 (also applies to 1906 and 1909)
+#		User Personalization Layer\User Layer Repository Path
+#		User Personalization Layer\User Layer Size in GB
+
+#Version 2.30 19-Dec-2019
+#	Added additional VDA registry key data to Machine details for VDA 1912 (Known Issues for ADM hardware encoding)
+#		HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\GfxRender\MaxNumRefFrames
+#	Fixed - FINALLY - the issue of detecting the Site Version for comparison.
+#		CVAD 1909 and above show Multi-session OS and Single-session OS
+#		CVAD 1906 and below show Server OS and Desktop OS
+#	Tested with CVAD 1912
+
+#Version 2.29 17-Dec-2019
+#	Fix Swedish Table of Contents (Thanks to Johan Kallio)
+#		From 
+#			'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+#		To
+#			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
+#	Updated help text
+
+#Version 2.28 25-Sep-2019
+#	Added "Multi-session OS" and "Single-session OS" where appropriate for CVAD versions greater than or equal to 1909
+#		Unlike Citrix, I use the correct form of "Single-session OS" and not "Single session OS". Thanks to Melissa Case
+#	Added new Broker registry keys for 1909
+#		HKLM:\Software\Policies\Citrix\DesktopServer\LegacyPeakTransitionDisconnectedBehaviour
+#		HKLM:\Software\Citrix\DesktopServer\LegacyPeakTransitionDisconnectedBehaviour
+#	Added new VDA registry key for 1909
+#		HKLM:\SOFTWARE\Citrix\AppV\Features
+#	Added new VDA registry key https://support.citrix.com/article/CTX212610
+#		HKLM:\Software\Citrix\Reconnect\DisableGPCalculation
+#	Added new VDA registry key https://support.citrix.com/article/CTX256900
+#		HKLM:\Software\Citrix\Reconnect\FastReconnect
+#	Added new Computer policy settings for CVAD 1909
+#		Profile Management\Advanced settings\Outlook search index database - backup and restore
+#		Profile Management\Basic settings\Migrate user store
+#		Profile Management\Profile handling\Automatic migration of existing application profiles
+#	Rework how to get the Site's version information to remove remote registry access
+#	Rework text output to allow for the longer Machine Catalog and Delivery Group type names
+#	Updated for CVAD 1909
+
+#Version 2.27 4-Sep-2019
+#	Add a NoSessions parameter to exclude Machine Catalog, Application and Hosting session data from the report
+
+#Version 2.26 27-Jun-2019
+#	Added to Session details for Applications and Hosting, session Recording Status
+#	Fixed incorrect variable names in Function OutputMachineDetails
+#	Fixed numerous boolean and numeric values in the HTML output that needed ToString()
+
+#Version 2.25 17-Jun-2019
+#	Added new Computer policy settings missed in earlier versions
+#		Profile Management\File system\Synchronization\Profile container - List of folders to be contained in profile disk
+#	Added new User policy settings for CVAD 1906
+#		ICA\Time Zone Control\Restore Desktop OS time zone on session disconnect or logoff
+#		ICA\Multimedia\Microsoft Teams redirection
+#	Renamed Profile Management\XenApp Optimization settings\Enable XenApp Optimization to 
+#		Profile Management\Citrix Virtual Apps Optimization settings\Enable Citrix Virtual Apps Optimization
+#	Renamed Profile Management\XenApp Optimization settings\Path to XenApp optimization definitions: to 
+#		Profile Management\Citrix Virtual Apps Optimization settings\Path to Citrix Virtual Apps optimization definitions:
+#	Updated for CVAD 1906
+
+#Version 2.24 18-Apr-2019
+#	If Policies parameter is used, check to see if PowerShell session is elevated. If it is,
+#		abort the script. This is the #2 support email. From an earlier update, which apparently no one saw:
+#			Version 2.16 16-May-2018
+#				Added a Note to the Help Text and ReadMe file about the Citrix.GroupPolicy.Commands module:
+#				Note: The Citrix Group Policy PowerShell module will not load from an elevated PowerShell session. 
+#				If the module is manually imported, the module is not detected from an elevated PowerShell session.
+
+#Version 2.23 15-Apr-2019
+#	Added -CSV parameter
+#		Updated each function that outputs each appendix to output a CSV file if -CSV is used
+#			Output CSV filename is in the format:
+#			CVADSiteName_Documentation_Appendix#_NameOfAppendix.csv
+#			For example:
+#				CVADSiteName_Documentation_AppendixA_VDARegistryItems.csv
+#				CVADSiteName_Documentation_AppendixB_ControllerRegistryItems.csv
+#				CVADSiteName_Documentation_AppendixC_MicrosoftHotfixesandUpdates.csv
+#				CVADSiteName_Documentation_AppendixD_CitrixInstalledComponents.csv
+#				CVADSiteName_Documentation_AppendixE_WindowsInstalledComponents.csv	
+#	Added tests for SQL Server 2019 and Azure SQL
+#	Added to the Hosting Connection output, IntelliCache setting
+#	Added new Computer policy settings for CVAD 1903
+#		ICA\Printing\Universal Print Server\SSL Cipher Suite
+#		ICA\Printing\Universal Print Server\SSL Compliance Mode
+#		ICA\Printing\Universal Print Server\SSL Enabled
+#		ICA\Printing\Universal Print Server\SSL FIPS Mode
+#		ICA\Printing\Universal Print Server\SSL Protocol Version
+#		ICA\Printing\Universal Print Server\SSL Universal Print Server encrypted print data stream (CGP) port
+#		ICA\Printing\Universal Print Server\SSL Universal Print Server encrypted web service (HTTPS/SOAP) port
+#	Added new VDA registry keys for CVAD VDA 1903
+#		HKLM:\SOFTWARE\Citrix\UniversalPrintDrivers\PDF\EnablePostscriptSimulation
+#		HKLM:\SOFTWARE\Citrix\UniversalPrintDrivers\PDF\EnableFullFontEmbedding
+#	Fixed all WriteHTMLLine lines that were supposed to be in bold. Wrong parameters were used.
+#	If both -MachineCatalogs and -DeliveryGroups parameters are used, only output the machine details for catalogs, not delivery groups
+#		This will help keep the report length shorter
+#	In Function OutputNicItem, change how $powerMgmt is retrieved
+#		Will now show "Not Supported" instead of "N/A" if the NIC driver does not support Power Management (i.e. XenServer)
+#	In the Summary Page, change Word/PDF and HTML output to use tables for better formatting
+#	Removed from report output, the individual listings for:
+#		Citrix Installed Components
+#		Controller Registry keys
+#		Microsoft Hotfixes
+#		VDA Registry Keys
+#		Windows Installed Roles and Features
+#
+#		These will now only show in the Appendixes to keep the report length shorter
+#		Removed Function OutputControllerRegistryKeys
+#		Removed Function OutputVDARegistryKeys
+#	Rewrote AddHTMLTable, FormatHTMLTable, and WriteHTMLLine for speed and accuracy (MBS)
+#	Rewrote Line to use StringBuilder for speed (MBS)
+#	Rewrote the Text output for the following sections:
+#		Machine Catalog Summary
+#		Delivery Group Summary
+#		Appendix A
+#		Appendix B
+#		Appendix C
+#		Appendix D
+#		Appendix E
+#	Sort Appendix E data by Display Name, Name, and DDCName, and change output to match
+#	Stop using a switch statement for HTML colors, and use a pre-calculated HTML array for speed (MBS)
+#	Updated expired ShareFile links in error messages
+#	Updated Function OutputNicItem with a $ComputerName parameter
+#		Updated Function GetComputerWMIInfo to pass the computer name parameter to the OutputNicItem function
+#	Updated Function SendEmail with corrections made by MBS
+#	Updated help text
+#	Went to Set-StrictMode -Version Latest, from Version 2 and cleaned up all related errors (MBS)
+
+#Version 2.22 28-Mar-2019
+#	Add new parameter -Controllers
+#	In the functions ProcessControllers and OutputControllers, change function variable $Controllers 
+#		to $DDCs for the new $Controllers parameter
+#	For Delivery Controllers, add the following when -Controllers is used:
+#		List of installed Microsoft Hotfixes and Updates
+#		List of Citrix installed components
+#		List of Windows installed Roles and Features
+#		Added Appendix C List of installed Microsoft Hotfixes and Updates for all Controllers
+#		Added Appendix D List of Citrix installed components for all Controllers
+#		Added Appendix E List of Windows installed Roles and Features for all Controllers
+#	In the Controllers section added the following:
+#		Controller State
+#		Warning if there is only one Controller
+#	Updated Help Text
+#	Updated the version checking process.
+#		If the script ran from a computer with a different Studio version than the delivery controller 
+#		version, the Studio version was reported as the Site version. If the $AdminAddress parameter 
+#		is used, get the version info from that delivery controller.
+
+#Version 2.21 1-Feb-2019
+#	Added additional VDA registry key data to Machine details for Local Text Echo added back in VDA 1811
+#		HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\GfxRender\UseDirect3D
+#		HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\GfxRender\PresentDevice
+#	Added License Server version
+#	Added missing data in the hosting section for Networks, Standard Storage, Personal vDisk Storage, and Temporary Storage
+#	Added test to catch multiple output parameters used
+#	Added the restart schedule "Frequency notification" to Delivery Group details
+#	Changed in Function Get-IPAddress, the Catch value from $Null to "Unable to resolve IP address"
+#	Fixed, in Functions OutputDesktopOSMachine and OutputServerOSMachine, the output of users
+#	Fixed bug in Function ProcessHosting where the comparison for $Hypervisor.Name was done incorrectly
+#	Fixed in Delivery Groups details to handle multiple Desktop Entitlements and multiple Restart Schedules
+#	Fixed in Function OutputControllerRegistryKeys, added a blank line after the Word table
+#	For Application details changed "Description" to "Description and keywords"
+#	In the Delivery Controllers section added a blank line after the Word and HTML tables
+
+#Version 2.20.2 26-Dec-2018
+#	Fixed Function OutputAppendixA to fix duplicate VDA registry lines
+
+#Version 2.20.1 20-Dec-2018
+#	Added variable $Script:AllControllerRegistryItems
+#	Reworked the variable $Script:ControllerRegistryItems
+#	Fixed Function OutputAppendixB to use $Script:AllControllerRegistryItems
+
+#Version 2.20 20-Dec-2018
+#	Updated for XenApp/XenDesktop 1811
+#	Added new MinimumFunctionalLevel L7_20 (1811 or newer) - (Thanks to Carl Stalhood)
+#	Added VDA registry key data to Machine details (Linux VDAs are ignored. Thanks to Rene Bigler for testing this.)
+#		HKLM:\SOFTWARE\Citrix\CtxKlMap
+#		HKLM:\SOFTWARE\Citrix\Audio\CleanMappingWhenDisconnect
+#		HKLM:\SOFTWARE\Citrix\Citrix Virtual Desktop Agent\DisableLogonUISuppression
+#		HKLM:\SOFTWARE\Citrix\Citrix Virtual Desktop Agent\DisableLogonUISuppressionForSmartCardPublishedApps
+#		HKLM:\SOFTWARE\Citrix\CtxHook\ExcludedImageNames
+#		HKLM:\SOFTWARE\Citrix\CtxHook\AppInit_Dlls\SHAppBarHook\FilePathName
+#		HKLM:\SOFTWARE\Citrix\CtxHook\AppInit_Dlls\SHAppBarHook\Flag
+#		HKLM:\SOFTWARE\Citrix\CtxHook\AppInit_Dlls\SHAppBarHook\Settings
+#		HKLM:\Software\Citrix\DesktopServer\AllowMultipleRemotePCAssignments
+#		HKLM:\SOFTWARE\Citrix\HDX3D\BitmapRemotingConfig\EnableDDAPICursor
+#		HKLM:\SOFTWARE\Citrix\HDX3D\BitmapRemotingConfig\#HKLM_DisableMontereyFBCOnInit
+#		HKLM:\SOFTWARE\Citrix\ICA\DisableAppendMouse
+#		HKLM:\SOFTWARE\Citrix\Ica\Thinwire\EnableDrvTw2NotifyMonitorOrigin
+#		HKLM:\SOFTWARE\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\ClientAudio\EchoCancellation
+#		HKLM:\SOFTWARE\Citrix\ICAClient\GenericUSB\EnableBloombergHID
+#		HKLM:\SOFTWARE\Citrix\PortICA\DisableRemotePCSleepPreventer
+#		HKLM:\SOFTWARE\Citrix\PortICA\RemotePC\RpcaMode
+#		HKLM:\SOFTWARE\Citrix\PortICA\RemotePC\RpcaTimeout
+#		HKLM:\SOFTWARE\Citrix\SmartCard\EnableSCardHookVcResponseTimeout
+#		HKLM:\SOFTWARE\Citrix\StreamingHook\EnableReadImageFileExecOptionsExclusionList
+#		HKLM:\Software\Citrix\VirtualDesktopAgent\ListOfSIDs
+#		HKLM:\Software\Citrix\VirtualDesktopAgent\SupportMultipleForest
+#		HKLM:\SOFTWARE\Wow6432Node\Citrix\CtxHook\ExcludedImageNames
+#		HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\ClientAudio\EchoCancellation
+#		HKLM:\SOFTWARE\Wow6432Node\Citrix\StreamingHook\EnableReadImageFileExecOptionsExclusionList
+#		HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\EnableVisualEffect
+#		HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI\AAHookFlags
+#		HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI\ApplicationLaunchWaitTimeoutMS
+#		HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI\LogoffCheckerStartupDelayInSeconds
+#		HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI\LogoffCheckSysModules
+#		HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI\SeamlessFlags
+#		HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI\WorkerWaitInterval
+#		HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI\WorkerFullCheckInterval
+#		HKLM:\SYSTEM\CurrentControlSet\Control\SCMConfig\EnableSvchostMitigationPolicy
+#		HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\ica-tcp\AudioConfig\MaxPolicyAge
+#		HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\ica-tcp\AudioConfig\PolicyTimeout
+#		HKLM:\SYSTEM\CurrentControlSet\Control\TerminalServer\fSingleSessionPerUser
+#		HKLM:\SYSTEM\CurrentControlSet\Services\CtxUvi\UviEnabled
+#		HKLM:\SYSTEM\CurrentControlSet\services\CtxUvi\UviProcessExcludes
+#		HKLM:\System\Currentcontrolset\services\picadm\Parameters\DisableFullStreamWrite
+#	Added Functions GetVDARegistryKeys, Get-VDARegKeyToObject, and OutputVDARegistryKeys
+#	Added new Parameter VDARegistryKeys
+#	Added VDARegistryKeys to MaxDetails
+#	If VDARegistryKeys is used, force MachineCatalogs to True
+#	Updated funcions ShowScriptOptions and ProcessScriptEnd for the new VDARegistryKeys parameter
+#	Added functions OutputAppendixA and OutputAppendixB
+#		Appendix A is a list of all VDA registry keys sorted by key name, key value, VDA type, and computer name
+#		Appendix B is a list of all Controller registry keys sorted by key name, key value, and Controller name
+#	Added processing the MetaDataMap properties for Machine Catalogs.
+#		Sample possible Keys and Values:
+#			Citrix_DesktopStudio_PreviousImageVdaFunctionalLevel_Is_L7_9 True 
+#			Citrix_DesktopStudio_RdsCatalogLicenseCheck_Warning NoPoweredOnVm 
+#				[Studio warning: The Microsoft Remote Desktop licensing check could not be run...]
+#				[There is no value provided to tell if the warning was removed from Studio or
+#					was successful during catalog creation]
+#			Citrix_DesktopStudio_Upgraded True 
+#		Keys that start with "Task" are ignored.
+#		The Citrix_DesktopStudio_IdentityPoolUid Key is ignored
+#	Comment out unused Word variables
+#	Fixed missing Disabled value for policy setting ICA\Printing\Universal Print Server\Universal Print Server enable
+#	Fixed several $Var -ne $null to $Null -ne $Var and on two Get-Process lines for WinWord and Excel (thanks to MBS)
+#	In Function OutputHostingSession, remove all the Desktop code as desktops are not used in that function
+#	Removed unused variables
+#	Reorganize the list of parameters in the help text and parameter sets
+#	Update help text
+
+#Version 2.19 2-Oct-2018
+#	Added new broker entitlement properties from Get-BrokerEntitlementPolicyRule (Thanks to Sacha Thomet and Carl Stalhood)
+#		Leasing behavior (LeasingBehavior)
+#		Maximum concurrent instances (MaxPerEntitlementInstances)
+#		SecureICA required (SecureIcaRequired)
+#		Session reconnection (SessionReconnection)
+#	Added new broker registry keys
+#		HeartbeatDistributionWidthSecs
+#		SiteDynamicDataRefreshMaxShutdownMs
+#		BulkPowerCheckingCoolOffActivePowerActionsSecs
+#		BulkPowerCheckingCoolOffSecs
+#		ExportConfigurationChunkSize
+#		MaxLocalDBMemorySizeMB
+#		LastOutageModeEnteredTime
+#	Changed the wording of the Delivery options in Application details to match the text in Studio
+#		For 1808, add the new MaxPerMachineInstances property (PowerShell only)
+#	Updated version checking at beginning of script to handle 1808 and hopefully later versions
+#	Tested with 1808.2
+
+#Version 2.18 5-Jun-2018
+#	Added new Computer policy settings
+#		ICA\Rendezvous Protocol (XA/XD 7.18)
+#			To enhance the scalability of the Cloud Connector, use the Rendezvous protocol for the VDA to connect directly 
+#			to the NetScaler Gateway Service. This new policy setting allows the VDA to establish an outbound connection 
+#			to a Rendezvous point (Flow Redirector, a component on the NetScaler Gateway Service cloud), bypassing the 
+#			Cloud Connector on a resource location for HDX traffic once the session is launched. Rendezvous Protocol is 
+#			enabled by default and applies only to Citrix Cloud.
+#		Profile Management\Advanced settings\Enable search index roaming for Outlook
+#	Added new User policy setting
+#		ICA\Multimedia\Browser Content Redirection Authentication Sites (XA/XD 7.18)
+#	Tested with XenApp/XenDesktop 7.18
+
+#Version 2.17 4-Jun-2018
+#	Fixed a blank line in HTML output for Groom Retention Settings in Days (Found by Ken Avram)
+#	Fixed HTML Hosting output for "Simultaneous actions..." where output showed System.Object[] (Found by Ken Avram)
+#	In Function OutputAdministrators, fix for when $Admin.Rights.ScopeName and $Admin.Rights.RoleName are arrays (Found by Ken Avram)
+#	In Function OutputDatastores, if the Principal, Mirror, Mirror Partner, or Mirror Witness contains a "\", 
+#		then get the IP address for the server name before the "\" (Found by Ken Avram)
+#		This should mean the database is running on SQL Server Express or has an Instance name
+#	In Function OutputXenDesktopLicenses, fix for when the property LicenseExpirationDate is $Null which means 
+#		the license Expiration Date is "Permanent" (Found by Ken Avram)
+#	In Machine Catalog details, check if MetadataMap contains data, if so add it to output. For example:
+#		ImageManagementPrep_DoImagePreparation True 
+#		ImageManagementPrep_Excluded_Steps Not set 
+#		ImageManagementPrep_NoAutoShutdown False
+#
+#		For more information, see:
+#			https://support.citrix.com/article/CTX140734
+#			https://support.citrix.com/article/CTX217456
+#			https://support.citrix.com/article/CTX223245
+#			https://www.citrix.com/blogs/2016/04/04/machine-creation-service-image-preparation-overview-and-fault-finding/
+#	
+#	In Machine Catalog Details, for MCS catalogs, add Account Identity Pool data:
+#		Account naming scheme
+#		Naming scheme type
+#		AD Domain
+#		AD location (OU distinquished name)
+#	Optimize Function ProcessCitrixPolicies by removing unneeded variable $WordTableRowHash. This removed almost 500
+#		lines of code and almost 500 unneeded variable initializations
+
+#Version 2.16 16-May-2018
+#	Added a Note to the Help Text and ReadMe file about the Citrix.GroupPolicy.Commands module:
+#		Note: The Citrix Group Policy PowerShell module will not load from an elevated PowerShell session. 
+#		If the module is manually imported, the module is not detected from an elevated PowerShell session.
+#	Changed a few arrays from "@() +=" to "New-Object System.Collections.ArrayList .Add()"
+#	Changed the code where I checked for Singletons and -is [array] to use @() around the cmdlets so the result
+#		is always an array. Thanks to fellow CTP Sam Jacobs for the tip. This reduced the code by almost 500 lines.
+#	Remove Function GetComputerServices  as it is not used
+#	Rollback changes made to the Policies region from Visual Studio Code as the changes broke policy output.
+#		I spent days trying to debug what broke the output but realized it was just better to roll the code back 
+#		to a working version.
+#	Updated all Dropbox links to ShareFile links.
+
+#Version 2.15 16-Apr-2018
+#	Added Function Get-IPAddress
+#	Added in Function OutputDatastores getting the IP address for each SQL server name
+#	Added in Function OutputLicensingOverview getting the IP address for the license server
+#	Changed from the deprecated Get-BrokerDesktop to Get-BrokerMachine
+#	Fixed many alignment issues with Text output
+#	In the Desktop Entitlement section, Excluded Users, the wrong variable name was used. Fixed.
+#	When building the array of all Machine Catalogs that are used by a Delivery Group,
+#		Only the first item in the array was being returned. Adding -Property CatalogName 
+#		to Sort-Object was needed to get the full unique array returned.
+#		Sort-Object -Property CatalogName -Unique
+
+#Version 2.14 11-Apr-2018
+#	Added the following properties to Application Details
+#		Application Type
+#		CPU Priority Level
+#		Home Zone Name
+#		Home Zone Only
+#		Ignore User Home Zone
+#		Icon from Client
+#		Local Launch Disabled
+#		Secure Command Line Arguments Enabled
+#		Add shortcut to user's desktop
+#		Add shortcut to user's Start Menu
+#		Start Menu Folder
+#		Wait for Printer Creation
+#	Added the following property to Delivery Group Details
+#		Reuse Machines Without Shutdown in Outage 
+#			With a note if the setting doesn't match the Site setting
+#	Added the following properties to Site Settings Details
+#		Base OU
+#		Color Depth
+#		Connection Leasing Enabled
+#		Default Minimum Functional Level
+#		DNS Resolution Enabled
+#		Is Secondary Broker
+#		Local Host Cache Enabled
+#		Reuse Machines Without Shutdown in Outage Allowed
+#		Secure ICA Required
+#		Trust Managed Anonymous XML Service Requests
+#		Trust Requests Sent to the XML Service Port
+#	Change several calls from Get-ConfigServiceAddedCapability -contains "ZonesSupport" to validObject
+#	Fixed missing variable set for Default Switch statement for $Group.MinimumFunctionalLevel in Function OutputDeliveryGroupDetails 
+#	Fixed missing variable set for Default Switch statement for $Catalog.MinimumFunctionalLevel in Function OutputMachines 
+#	Fixed missing variable set for Default Switch statement for $AppDisk.State in Function OutputAppDiskTable 
+#	Fixed missing variable set for Default Switch statement for $Application.CpuPriorityLevel in Function OutputApplicationDetails 
+#	Fixed missing variable set for Default Switch statement for $Application.ApplicationType in Function OutputApplicationDetails 
+#	Fixed all misspellings of unathenticated to unauthenticated
+
+#Version 2.13 7-Apr-2018
+#	Added Operating System information to Functions GetComputerWMIInfo and OutputComputerItem
+#	Code clean-up for most recommendations made by Visual Studio Code
+#	During the code clean up, I came across some "unused" variables. I had just
+#		forgotten to add them to the output. OOPS! They are now added.
+#			Off Peak Buffer Size Percent
+#			Off Peak Disconnect Timeout (Minutes)
+#			Off Peak Extended Disconnect Timeout (Minutes)
+#			Off Peak LogOff Timeout (Minutes)
+#			Peak Buffer Size Percent
+#			Peak Disconnect Timeout (Minutes)
+#			Peak Extended Disconnect Timeout (Minutes)
+#			Peak LogOff Timeout (Minutes)
+#			Settlement Period Before Auto Shutdown (HH:MM:SS)
+#			Settlement Period Before Use (HH:MM:SS)
+#		Code clean up also found a copy and paste error with Session Linger
+#			The "end session linger" value was still using the "end session prelaunch" variable
+#			OOPS, sorry about that. Fixed.
+
+#Version 2.12 10-Mar-2018
+#	Fix $SQLVersion for SQL 2008 R2. Minor version is 50, not 5.
+#	In application details, change from "Folder (for user)" to "Application category (optional)". 
+#		This changed in XA/X 7.8 and I never noticed it and no one reported it.
+#		Thanks to lbates for bringing it to my attention.
+
+#Version 2.11 2-Mar-2018
+#	Added additional SQL database information to the Configuration section
+#	Added new function GetDBCompatibilityLevel
+#	Added new User policy settings
+#		ICA\Multimedia\Browser Content Redirection Blacklist Configuration
+#		ICA\Session Watermark\Enable session watermark
+#		ICA\Session Watermark\Watermark Content\Include client IP address
+#		ICA\Session Watermark\Watermark Content\Include connection time
+#		ICA\Session Watermark\Watermark Content\Include logon user name
+#		ICA\Session Watermark\Watermark Content\Include VDA host name
+#		ICA\Session Watermark\Watermark Content\Include VDA IP address
+#		ICA\Session Watermark\Watermark Content\Watermark custom text
+#		ICA\Session Watermark\Watermark Style\Session watermark style
+#	Change the Broker Registry Keys to sort by RegKey and then RegValue and change output to match
+#	Change the Broker Registry Keys heading from "2" to "3"
+#	Move section headings for Machine Catalogs, AppDisks, Delivery Groups, and Applications to their respective "Process" functions.
+#		This allows the "There are no Machine Catalogs/AppDisks/Delivery Groups/Applications" messages to appear in their own sections, 
+#		and for Word/PDF output, not directly under the Table of Contents
+#	Updated function GetSQLVersion to add support for SQL Server 2017
+#	Updated function OutputDatastores for the additional SQL Server and Database information
+#		Changed Word/PDF and HTML output from a horizontal table to three vertical tables
+#	Updated the "Default" message in function GetSQLVersion
+#	When there are no Machine Catalogs, change the message from "There are no Machines" to "There are no Machine Catalogs"
+
+#Version 2.10 10-Feb-2018
+#	Added Log switch to create a transcript log
+#		Added function TranscriptLogging
+#		Citrix.GroupPolicy.Commands and New-PSDrive break transcript logging so restart logging after each New-PSDrive call
+#		Removed the Log Alias from the Logging parameter
+#	Added variable $xLastConnectionTime in Function OutputMachineDetails to handle the Nullable DateTime property LastConnectionTime
+#	Fixed HTML output for Administrative Scopes
+#	In Function OutputCEIPSetting, initialize the $CEIP variable in case of error with Get-AnalyticsSite
+#	In the OutputMachines functions, don't process manually provisioned catalogs
+#		There is no $Catalog.ProvisioningSchemeId for manually provisioned catalogs
+#	In the OutputMachineDetails function, change the variable used for the Write-Verbose "Output Machine" line
+#		RemotePC and machines not registered have a $Null HostMachineName property
+#		Use the first part of the DNSName property value
+#	In the Policies Word output, if there are no policy settings, add line stating that and skip the Word table functions
+#	In the Summary page, Policies section, added a space before "(AD Policies can contain multiple Citrix policies)"
+#	Most of the calls to Get-Broker* were changed from @XDParams1 to @XDParams2 to add the MaxRecordCount switch
+#		This is to handle entities with more than 250 items (Machine Catalogs, Delivery Groups, Machines/Desktops, Sessions, etc.)
+#	Update functions ShowScriptOutput and ProcessScriptEnd for new Log parameter
+#	Updated help text
+
+#Version 2.09 8-Dec-2017
+#	Updated Function WriteHTMLLine with fixes from the script template
+
+#Version 2.08 28-Nov-2017
+#	Added the following new Computer policy setting:
+#		Browser Content Redirection
+#		Enable XenApp Optimization
+#		Path to XenApp optimization definitions
+#	Added the following new User policy settings:
+#		Browser Content Redirection ACL Configuration
+#		Browser Content Redirection Proxy Configuration
+#		Display lossless indicator
+#		Optimize for 3D graphics workload
+#		Tablet Mode Toggle
+#	Tested with XenApp/XenDesktop 7.16
+#	Update help text
+
+#Version 2.07 5-Sep-2017
+#	Added the following new Computer policy setting:
+#		Logon Exclusion Check
+#	Tested with XenApp/XenDesktop 7.15
+
+#Version 2.06 30-Jun-2017
+#	Added all properties from Get-MonitorConfiguration to Datastore section
+#		For the Monitoring Database Details:
+#			CollectHotfixDataEnabled
+#			DataCollectionEnabled
+#			DetailedSqlOutputEnabled
+#			EnableDayLevelGranularityProcessUtilization
+#			EnableHourLevelGranularityProcessUtilization
+#			EnableMinLevelGranularityProcessUtilization
+#			FullPollStartHour
+#			MonitorQueryTimeoutSeconds
+#			ResolutionPollTimeHours
+#			SyncPollTimeHours
+#		For the Groom Retention Settings in Days:
+#			GroomApplicationErrorsRetentionDays
+#			GroomApplicationFaultsRetentionDays
+#			GroomApplicationInstanceRetentionDays
+#			GroomDeletedRetentionDays
+#			GroomFailuresRetentionDays
+#			GroomHourlyRetentionDays
+#			GroomLoadIndexesRetentionDays
+#			GroomMachineHotfixLogRetentionDays
+#			GroomMachineMetricDataRetentionDays
+#			GroomMachineMetricDaySummaryDataRetentionDays
+#			GroomMinuteRetentionDays
+#			GroomNotificationLogRetentionDays
+#			GroomProcessUsageDayDataRetentionDays
+#			GroomProcessUsageHourDataRetentionDays
+#			GroomProcessUsageMinuteDataRetentionDays
+#			GroomProcessUsageRawDataRetentionDays
+#			GroomResourceUsageDayDataRetentionDays
+#			GroomResourceUsageHourDataRetentionDays
+#			GroomResourceUsageMinuteDataRetentionDays
+#			GroomResourceUsageRawDataRetentionDays
+#			GroomSessionMetricsDataRetentionDays
+#			GroomSessionsRetentionDays
+#			GroomSummariesRetentionDays
+#	Added Function GetSQLVersion
+#	Added Read-Committed Snapshot and SQL Server version data to Datastore table
+#	If any of the databases are configured for mirroring and the database size is null,
+#		use the mirror server's name to calculate the size
+#		if the size is still null, report "Unable to determine"
+#	If SQL Server mirroring is not configured, in the Datastore table use "Not Configured" for the Mirror Server Address
+
+#Version 2.05 26-Jun-2017
+#	Added additional error checking for Site version information
+#		If "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Citrix Desktop Delivery Controller" 
+#		is not found on the computer running the script, then look on the computer specified for -AdminAddress
+#		If still not found on that computer, abort the script
+#	Added back the WorkerGroup policy filter for XenApp 6.x
+#	Added Broker registry keys that can be set on Broker servers
+#		Added Function GetControllerRegistryKeys
+#		Added Function Get-RegistryValue2
+#		Added Function Get-RegKeyToObject
+#		Added Function OutputControllerRegistryKeys
+#		Added new parameter BrokerRegistryKeys
+#		There are 315 registry keys and values that are checked and listed
+#		Updated Function OutputControllers
+#	Added Controller version information to the Controllers section
+#	Added "Database Size" to the Datastores output
+#	Added folder name to Function OutputApplication (Thanks to Brandon Mitchell)
+#	Added four new Cover Page properties
+#		Company Address
+#		Company Email
+#		Company Fax
+#		Company Phone
+#	Added loading the SQL Server assembly so the database size calculations work consistently (thanks to Michael B. Smith)
+#	Added missing function validObject
+#	Added new parameter MaxDetails:
+#		This is the same as using the following parameters:
+#			Administrators
+#			AppDisks
+#			Applications
+#			BrokerRegistryKeys
+#			DeliveryGroups
+#			HardWare
+#			Hosting
+#			Logging
+#			MachineCatalogs
+#			Policies
+#			StoreFront
+#	Added sort applications by AdminFolderName and ApplicationName to Function ProcessApplications (Thanks to Brandon Mitchell)
+#	Added support for version 7.14
+#	Added the following new Computer policy settings:
+#		Application Launch Wait Timeout
+#		Enable monitoring of application failures
+#		Enable monitoring of application failures on Desktop OS VDAs
+#		List of applications excluded from failure monitoring
+#		Logoff Checker Startup Delay (seconds)
+#		Profile Streaming Exclusion list - directories
+#	Added to Delivery Group, LicenseModel and ProductCode
+#	Added Version information to Controllers
+#	Fixed bug when retrieving Filters for a Policy that "applies to all objects in the Site"
+#	Fixed Function Check-LoadedModule
+#	Fixed function OutputPolicySetting
+#	Fixed functions ProcessAppV and OutputAppv to handle multiple AppV servers (Thanks to Brandon Mitchell)
+#	Fixed numerous issues in the Policies section
+#	Fixed the "CPU Usage", "Disk Usage", and "Memory Usage" policy settings
+#		When those settings are Disabled, they are stored as Enabled with a Value of -1
+#	Fixed two calls to Get-BrokerApplication that were retrieving the default of 250 records (Thanks to Brandon Mitchell)
+#	Removed code (240 lines) that made sure all Parameters were set to default values if for some reason they did exist or values were $Null
+#	Reordered the parameters in the help text and parameter list so they match and are grouped better
+#	Replaced _SetDocumentProperty function with Jim Moyle's Set-DocumentProperty function
+#	Updated Function OutputDatastores to:
+#		Add database size
+#		Fix output for mirrored databases
+#		Check if SQL Server assembly is loaded before calculating database size
+#	Updated Function ProcessScriptEnd for the new Cover Page properties and Parameters
+#	Updated Function ShowScriptOptions for the new Cover Page properties and Parameters
+#	Updated Function UpdateDocumentProperties for the new Cover Page properties and Parameters
+#	Updated help text
+#	When -NoPolicies is specified, the Citrix.GroupPolicy.Commands module is no longer searched for
+
+#Version 2.04 released 6-Mar-2017
+#	Fixed wording of more policy names that changed from 7.13 prerelease to RTM
+#		URL Redirection -> Bidirectional Content Redirection
+#		Allow URL Redirection -> Allow Bidirectional Content Redirection
+#		Allow Client URLs -> Allowed URLs to be redirected to Client
+#		Allow VDA URLs -> Allowed URLs to be redirected to VDA
+#		UPM - Enable Default Exclusion List - directories -> Enable Default Exclusion List - directories
+#		UPM - !ctx_localappdata!\Microsoft\Application Shortcuts -> UPM - !ctx_localappdata!\Microsoft\Windows\Application Shortcuts
+#		UPM - !ctx_localappdata!\Microsoft\Burn -> UPM - !ctx_localappdata!\Microsoft\Windows\Burn
+
+#Version 2.03 released 3-Mar-2017
+#	Fixed bug reported by P. Ewing in Functions ConfigLogPreferences and OutputDatastores
+#	Fixed wording of policy setting (thanks to Esther Barthel):
+#		"Profile Management\File system\Default Exclusions\UPM - !ctx_localappdata!\Microsoft\CD Burning" to 
+#		"Profile Management\File system\Default Exclusions\UPM - !ctx_localappdata!\Microsoft\Windows\CD Burning"
+
+#Version 2.02 released 1-Mar-2017
+#	Added Application Group details
+#	Added Application Group "SingleAppPerSession" property
+#	Updated help text
+
+#Version 2.01 released 28-Feb-2017
+#	Added -Dev and -ScriptInfo parameters
+#	Fixed several undefined variables
+#	Updated help text
+
+# Version 2.0 released on 21-Feb-2017
+#	Added "Launch in user's home zone" to Delivery Group details
+#	Added AppDisks
+#	Added AppDNA and the ability to process just the AppDNA section
+#	Added Break statements to most of the Switch statements
+#	Added Chinese language support
+#	Added Configuration Logging Preferences
+#		Show correct database size, not the wrong size reported in Studio
+#	Added Description to Machine Catalog details
+#	Added Desktop Entitlement settings to Delivery Groups that are configured to deliver desktops
+#	Added new policies
+#	Added RemotePC OU and Subfolder properties to RemotePC Machine Catalog details
+#	Added "Restrict launches to machines with tag" to Random/Desktops only and RemotePC Delivery Groups
+#	Added Summary Report page
+#	Added support for VDA versions 7.8 and 7.9 (which includes 7.11/7.12/7.13)
+#	Added support for XenApp/XenDesktop 7.8, 7.9, 7.11, 7.12, 7.13
+#	Added to machine catalog information for RemotePC, "No. of Machines" and "Allocated Machines"
+#	Brought core functions up-to-date with the other scripts
+#	Fix numerous typos
+#	Fixed formatting issues with HTML headings output
+#	Fixed French wording for Table of Contents 2 (Thanks to David Rouquier)
+#	Fixed the “No. of machines” for Machine Catalogs so it is now accurate
+#	Fixed the Machine Catalog details to match what is shown in Studio
+#	For Machine Catalog details, for PVS provisioned catalogs, add the PVS Server address
+#	For Persistent machines with changes stored on the local disk, added the “VM copy mode”
+#	For Personal vDisk catalogs, added PvD size and drive letter
+#	For Random catalog types (SingleSession and MultiSession), added "Temporary memory cache size (MB)" and "Temporary disk cache size (GB)"
+#	Removed unnecessary blank lines in policy value output
+#	Removed snapin citrix.common.commands as it is removed in 7.13 and no cmdlets are used from that snapin
+#	Updated error message for missing snapins to state requires a 7.8 or later Controller
+#	Updated help text
+#	Updated Machine/Desktop details to match what is shown in Studio
+#	Updated the Delivery Group details section with the changes to how "Delivering" is determined for XenApp Delivery Groups
+#	Updated the Delivery Group "Restart Schedule" wording to match the changes in Studio
+#	Updated the Delivery Group "Restart Schedule" to include the PowerShell only setting of "Restrict to tag" for 7.12 and later
+#	Updated the Delivery Group section to match all the changes made in Studio
+#	Updated version checking
+#		Now display running version in error messages
+#	Updated version checking registry access to allow 32-bit PowerShell access to 64-bit registry
+#
+
+# Version 1.0 released to the community on June 12, 2015

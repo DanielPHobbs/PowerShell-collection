@@ -1,0 +1,32 @@
+#webster@carlwebster.com
+#@carlwebster on Twitter
+#Sr. Solutions Architect, Choice Solutions, LLC
+#http://www.CarlWebster.com
+#Created on September 26, 2017
+
+# Version 1.01 6-Nov-2017
+#	When -WhatIf or -Confirm with No or -Confirm with No to All is used, do not log non-actions as failures
+
+# Version 1.0 released to the community on November 2, 2017
+
+******************************************************************************
+*   WARNING             WARNING                WARNING             WARNING   *
+******************************************************************************
+
+Do not run this script when there are valid active provisioning tasks processing.
+
+Because of the way the Get-ProvTask cmdlet works, this script retrieves the
+first task where the Active property is TRUE, regardless of whether the task
+is a current task or an old task left in the system.
+
+This script will remove the first active task it finds and then, depending on
+the -ResourceConnectionOnly switch, will attempt to delete all resource 
+connections in the specified hosting connection and then attempt to delete the 
+specified hosting connection.
+
+******************************************************************************
+*   WARNING             WARNING                WARNING             WARNING   *
+******************************************************************************
+
+
+
